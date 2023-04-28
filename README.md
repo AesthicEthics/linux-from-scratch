@@ -88,7 +88,17 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
     We're moving from NolibC to Glibc to provide a more functional toolchain to the new linux system. To do this, we start by creating symbolic link between the GCC  based dyanmic linking libraries on the host system and the ones we create on the target system. These allow our exectuable binaries to load shared libraries from the kernel during runtime.
 
     ```bash
-        make headers #compiles linux kernel into sanitized header files# 
-        find usr/include -type f ! -name '*.h' -delete # remove all files that aren't .h (all files that arent used for compiling C/C++ code)
-        cp -rv usr/include $LFS/usr # move all these files into the LFS system in the /includes folder, thats where the compilers look for headerfiles
+        # check if machine is 32-bit using pattern matching (i368,i486,1586...)
+        case $(uname -m) in
+          i?86)
+            # -f suggests if the target file already exists it should be replaced
+            ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
+            ;;
+          x86_64)
+            # two links because programs can look in either directory given x86_64
+            # the names are specified in the LSB standard
+            ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64
+            ln -sfv ../lib/ld-linux-x86-64.so.2 $LFS/lib64/ld-lsb-x86-64.so.3
+            ;;
+        esac
      ```
