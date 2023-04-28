@@ -80,3 +80,15 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
         find usr/include -type f ! -name '*.h' -delete # remove all files that aren't .h (all files that arent used for compiling C/C++ code)
         cp -rv usr/include $LFS/usr # move all these files into the LFS system in the /includes folder, thats where the compilers look for headerfiles
      ```
+
+  ### <u>Glibc</u>
+  - Source: https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.1.11.tar.xz
+  - Version: 6.1.11
+  
+    We're moving from NolibC to Glibc to provide a more functional toolchain to the new linux system. To do this, we start by creating symbolic link between the GCC  based dyanmic linking libraries on the host system and the ones we create on the target system. These allow our exectuable binaries to load shared libraries from the kernel during runtime.
+
+    ```bash
+        make headers #compiles linux kernel into sanitized header files# 
+        find usr/include -type f ! -name '*.h' -delete # remove all files that aren't .h (all files that arent used for compiling C/C++ code)
+        cp -rv usr/include $LFS/usr # move all these files into the LFS system in the /includes folder, thats where the compilers look for headerfiles
+     ```
