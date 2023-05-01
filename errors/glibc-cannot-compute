@@ -1,0 +1,15 @@
+Error: 
+
+command: ../configure                             \
+      --prefix=/usr                      \
+      --host=$LFS_TGT                    \
+      --build=$(../scripts/config.guess) \
+      --enable-kernel=3.2                \
+      --with-headers=$LFS/usr/include    \
+      libc_cv_slibdir=/usr/lib
+
+configure: error: cannot compute suffix of object files: cannot compile
+
+issue: invalid config settings, path variables were not sourced form .bashrc 
+
+sol: source correct .bashrc for lfs user
