@@ -128,7 +128,7 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
   
   C++ standard library required to compile C++ code. We didn't install this when building g++ because its installation depends on the ```Glibc``` library.
 
-    ``` bash
+    ```bash
       ../libstdc++-v3/configure           \
           --host=$LFS_TGT                 \
           --build=$(../config.guess)      \
@@ -137,5 +137,140 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
           --disable-nls                   \
           --disable-libstdcxx-pch         \ # we don't need pre-compiled binaries/files at the moment so we won't install them
           --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/12.2.0 # specifies installtion directory for include files. this needs to match where the the pre-installed compiler will look for include files
-          ```
-     
+    ```
+## Cross-Compiling System Utilities
+
+  ### <u>M4</u>
+  
+   <p> M4 is a macro-processor that allows user to define macros and templates that can be used to generate text-files and configuration scripts </p>
+   
+   e.x. 
+   
+   ```m4
+    # httpd.conf.m4 template
+
+    Listen <%= $PORT %>
+
+    DocumentRoot "<%= $DOC_ROOT %>"
+
+    <% if ($ENABLE_SSL) { %>
+    SSLEngine on
+    SSLCertificateFile "<%= $CERT_FILE %>"
+    <% } %>
+```
+
+  usage: 
+  ```bash m4 -DPORT=8080 -DDOC_ROOT=/var/www/html -DENABLE_SSL=1 -DCERT_FILE=/path/to/cert.pem httpd.conf.m4 > httpd.conf ```
+  
+  ### <u>Ncurses</u>
+    Ncurses is basically a frontend utility library for the terminal interface on ubuntu. This libraries provides functions that can be used to develop complex terminal interfaces with features like text formatting, mouse support, windows and etc.
+    
+    Before we use Ncurses, we need to install and configure ```tic```. ```tic``` is a program that allows you to compile ```terminfo``` description files that can be used by the ncurses library to control the terminal. 
+    
+    The terminfo files contain parameters that specify the terminal capabilities such as number of columns and rows, the colors and control sequences you can send to the sequence.
+   
+   Installing and configuring ```tic```:
+   
+   ```bash
+   
+        # Create a new directory called 'build'
+        mkdir build
+
+        # Change the current working directory to 'build'
+        # 'pushd' will save the current directory to a stack so it can be easily returned to later
+        pushd build
+
+        # Run the configure script located in the parent directory (..)
+        ../configure
+
+        # Run the 'make' command in the 'include' directory
+        # This will build any necessary files in the 'include' directory
+        make -C include
+
+        # Run the 'make' command in the 'progs' directory to build the 'tic' program
+        make -C progs tic
+
+        # Return to the original directory (the parent of 'build')
+        # 'popd' will return to the directory saved on the stack earlier
+        popd
+
+
+   ```
+   
+   Cross-Compiling Ncurses:
+   ```bash
+     ./configure --prefix=/usr             \
+              --host=$LFS_TGT              \
+              --build=$(./config.guess)    \
+              --mandir=/usr/share/man      \ #directory where man pages will be installed
+              --with-manpage-format=normal \ # prevent installation of compressed man pages (we want normal ones lol)
+              --with-shared                \ # allow ncurses to build and install shared C libraries
+              --without-normal             \ # don't build static & install C libraries
+              --with-cxx-shared            \ # same libary settings for C++ bindings
+              --without-debug              \
+              --without-ada                \ # don't build support for Ada compiler (available on host but won't be there on LFS)
+              --disable-stripping          \ # don't use host tools on LFS
+              --enable-widec
+   ```
+   
+   We have to remember that the LFS system only has baby resources so we try and avoid static libraries that are directly linked to the exectuable and instead only use dynamic/shared libaries which will link to the executable on run-time and a as needed basis only saving us memory and diskspace. 
+   
+   After the installation steps we must run the ```bash echo "INPUT(-lncursesw)" > $LFS/usr/lib/libncurses.so``` command to make libcurses shared library available in the ```lib``` directory so when the dynamic linker looks for it, it is available for other programs to use.
+   
+### <u>Bash</u>
+  Literally cross compiling bash because what would we do on a linux system without one.
+  
+  ```bash 
+    ./configure --prefix=/usr                      \
+            --build=$(sh support/config.guess) \
+            --host=$LFS_TGT                    \
+            --without-bash-malloc # turns off bash's memory allocation function (notorious for causing seg faults), instead it will rely on the Glibc ```malloc``` which is much better defined
+  ```
+  
+  Remember to create a symlink for some fancy programs that use ```sh``` and not ```bash``` for the shell ```ln -sv bash $LFS/bin/sh```
+  
+### <u> Coreutils </u>
+
+  This package is responsible for bringing essential system-related command-line utilities to life. This forms the basis for and introduces foundational commands like
+  ```cp```, ```mkdir```, ```ls``` and more to the linux system.
+
+  ```bash
+      ./configure --prefix=/usr                     \
+                --host=$LFS_TGT                   \
+                --build=$(build-aux/config.guess) \
+                --enable-install-program=hostname \ # enable installation of the hostname program (set and view system hostname)
+                --enable-no-install-program=kill,uptime
+  ```
+  
+  ### <u> Diffutils </u>
+ 
+  The Diffutils package contains programs that show the differences between files or directories.
+  
+  ```bash
+    ./configure --prefix=/usr --host=$LFS_TGT
+  ```
+
+### <u> Other Utilities </u>
+  The following were also installed into the system using the same process
+  - File-5.44
+    - Package contains a utility to help determine the file type of given files
+  - Findutils-4.9.0
+    - provides the ```find``` utility that allows you to locate files in a given file system alongside maintaing search database of existing files
+  - Gawk-5.2.1
+    - Packages for manipulating text files
+  - Grep-3.8
+    - Contains utility for searching and filtering through text files
+  - Gzip-1.12
+    - Package responsible for compression and decompression of files
+  - Make-4.4
+    - Package that controls the generation of exectuables and non-source files from the source files of a package (YML file for exectuables) 
+  - Patch-2.7.6
+    - Contains program for modifying or creating files by applying a ```patch``` file to fix dependencies/upstream in a program
+  - Sed-4.9
+    - Text and file manipulation software. Contains a stream editor
+  - Tar-1.34
+    - Package provides the abikity to create tar archives and perform archive manipulation. 
+  - Xz-5.4.1
+    - Contains packages for compressing and decompressing files. Provides caapbilties for the lzma and newer compression formats. 
+  
+  And second passes were performe on ```Binutils-2.40``` & ```GCC-12.2.0``` to add system specific optimizations for the minimally compiled toolchain
