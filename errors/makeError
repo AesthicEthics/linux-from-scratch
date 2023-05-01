@@ -1,0 +1,59 @@
+root@ubuntu:/home/lfs/build/m4/m4-1.4.19# make
+make  all-recursive
+make[1]: Entering directory '/home/lfs/build/m4/m4-1.4.19'
+Making all in .
+make[2]: Entering directory '/home/lfs/build/m4/m4-1.4.19'
+make[2]: Nothing to be done for 'all-am'.
+make[2]: Leaving directory '/home/lfs/build/m4/m4-1.4.19'
+Making all in examples
+make[2]: Entering directory '/home/lfs/build/m4/m4-1.4.19/examples'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/lfs/build/m4/m4-1.4.19/examples'
+Making all in lib
+make[2]: Entering directory '/home/lfs/build/m4/m4-1.4.19/lib'
+  GEN      alloca.h
+  GEN      configmake.h
+  GEN      dirent.h
+  GEN      fcntl.h
+  GEN      getopt.h
+  GEN      getopt-cdefs.h
+  GEN      iconv.h
+  GEN      inttypes.h
+  GEN      langinfo.h
+  GEN      limits.h
+  GEN      locale.h
+  GEN      math.h
+  GEN      sched.h
+  GEN      signal.h
+  GEN      sigsegv.h
+  GEN      spawn.h
+  GEN      stdio.h
+  GEN      stdlib.h
+  GEN      string.h
+  GEN      sys/random.h
+  GEN      sys/stat.h
+  GEN      sys/types.h
+  GEN      sys/wait.h
+  GEN      time.h
+  GEN      unistd.h
+  GEN      wchar.h
+  GEN      wctype.h
+make  all-am
+make[3]: Entering directory '/home/lfs/build/m4/m4-1.4.19/lib'
+  CC       asyncsafe-spin.o
+  CC       openat-proc.o
+In file included from /home/thakur/Projects/linux-from-scratch/LFS/usr/include/stdlib.h:1040,
+                 from ./stdlib.h:36,
+                 from openat-priv.h:25,
+                 from openat-proc.c:22:
+/home/thakur/Projects/linux-from-scratch/LFS/usr/include/bits/stdlib.h: In function 'wctomb':
+/home/thakur/Projects/linux-from-scratch/LFS/usr/include/bits/stdlib.h:86:3: error: #error "Assumed value of MB_LEN_MAX wrong"
+   86 | # error "Assumed value of MB_LEN_MAX wrong"
+      |   ^~~~~
+make[3]: *** [Makefile:2866: openat-proc.o] Error 1
+make[3]: Leaving directory '/home/lfs/build/m4/m4-1.4.19/lib'
+make[2]: *** [Makefile:2481: all] Error 2
+make[2]: Leaving directory '/home/lfs/build/m4/m4-1.4.19/lib'
+make[1]: *** [Makefile:2018: all-recursive] Error 1
+make[1]: Leaving directory '/home/lfs/build/m4/m4-1.4.19'
+make: *** [Makefile:1974: all] Error 2
