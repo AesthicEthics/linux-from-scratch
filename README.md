@@ -121,3 +121,21 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
       
       # expected output: [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2] (the LFS specified linker)
      ```
+     
+### <u>Libstdc++</u>
+  - Source: https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.1.11.tar.xz
+  - Version: 6.1.11
+  
+  C++ standard library required to compile C++ code. We didn't install this when building g++ because its installation depends on the ```Glibc``` library.
+
+    ``` bash
+      ../libstdc++-v3/configure           \
+          --host=$LFS_TGT                 \
+          --build=$(../config.guess)      \
+          --prefix=/usr                   \
+          --disable-multilib              \
+          --disable-nls                   \
+          --disable-libstdcxx-pch         \ # we don't need pre-compiled binaries/files at the moment so we won't install them
+          --with-gxx-include-dir=/tools/$LFS_TGT/include/c++/12.2.0 # specifies installtion directory for include files. this needs to match where the the pre-installed compiler will look for include files
+          ```
+     
