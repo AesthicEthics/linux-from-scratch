@@ -328,3 +328,50 @@ target_alias='x86_64-lfs-linux-gnu'
 #define VERSION "5.2.1"
 
 configure: exit 77
+
+
+--------
+
+root@ubuntu:/home/lfs/build/glibc/glibc-2.37/build# ../configure --prefix=/usr --host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=$LFS/usr/include libc_cv_slibdir=/usr/lib
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-lfs-linux-gnu
+checking for x86_64-lfs-linux-gnu-gcc... x86_64-lfs-linux-gnu-gcc
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether x86_64-lfs-linux-gnu-gcc accepts -g... yes
+checking for gcc... gcc
+checking for x86_64-lfs-linux-gnu-g++... x86_64-lfs-linux-gnu-g++
+checking whether we are using the GNU C++ compiler... yes
+checking whether x86_64-lfs-linux-gnu-g++ accepts -g... yes
+checking whether x86_64-lfs-linux-gnu-g++ can link programs... no
+checking for sysdeps preconfigure fragments... aarch64 alpha arc arm csky hppa i386 loongarch m68k microblaze checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+mips nios2 or1k powerpc riscv s390 sh checking for grep that handles long lines and -e... (cached) /usr/bin/grep
+checking for egrep... (cached) /usr/bin/grep -E
+sparc x86_64 checking whether x86_64-lfs-linux-gnu-gcc compiles in -mx32 mode by default... no
+
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether ln -s works... yes
+checking for /home/thakur/Projects/linux-from-scratch/LFS/tools/lib/gcc/x86_64-lfs-linux-gnu/12.2.0/../../../../x86_64-lfs-linux-gnu/bin/ld... /home/thakur/Projects/linux-from-scratch/LFS/tools/lib/gcc/x86_64-lfs-linux-gnu/12.2.0/../../../../x86_64-lfs-linux-gnu/bin/ld
+checking version of /home/thakur/Projects/linux-from-scratch/LFS/tools/lib/gcc/x86_64-lfs-linux-gnu/12.2.0/../../../../x86_64-lfs-linux-gnu/bin/ld... 2.40, ok
+checking for gnumake... no
+checking for gmake... gmake
+checking version of gmake... 4.3, ok
+checking for gnumsgfmt... no
+checking for gmsgfmt... no
+checking for msgfmt... no
+checking for makeinfo... makeinfo
+checking version of makeinfo... 6.8, ok
+checking for sed... sed
+checking version of sed... 4.8, ok
+checking for gawk... gawk
+checking version of gawk... v. ?.??, bad
+checking for bison... bison
+checking version of bison... 3.8.2, ok
+checking if x86_64-lfs-linux-gnu-gcc is sufficient to build libc... yes
+checking for python3... python3
+checking version of python3... 3.10.6, ok
+configure: error: 
+*** These critical programs are missing or too old: gawk
+*** Check the INSTALL file for required versions.
+
