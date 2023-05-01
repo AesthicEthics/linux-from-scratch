@@ -102,3 +102,22 @@ System toolchain was cross-c The Linux kernel needs to expose an Application Pro
             ;;
         esac
      ```
+     
+     After we configure and cross-compile glibc into our LFS system, we should see a populated ```$LFS/usr/bin```. This cross-compiles a set of system-essential tools such as ```awk```, ```ldd``` and more that are required to build software on the LFS system. 
+     
+     The next step for us would be modifying the ```RTLDLIST``` variable in the ```ldd``` file. ```ldd``` is a command line utility which prints the shared libraries a specific program relies on as an output and is used by many compilation and configuration scripts. The ```RTLDLIST``` variable is used by the script to determine where these shared libraries can be found and located, in our LFS system, we specify for these libraries to be located in the ```/lib``` directory as opposed to the ```/usr/lib``` dir (even though they're sym linked). 
+     
+     we'll use sed to remove the default-hardcoded ```/usr/lib``` path to just ```/lib``` as such:
+     
+     ```sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd```
+     
+     ### Sanity Check
+     
+     To make sure the newly-compiled toolchain is working as expected we write a sanity-check script to check which whether the ```$LFS``` compiler is looking for the dynamic linker in the correct locations.
+     
+     ```bash
+      echo 'int main(){}' | $LFS_TGT-gcc -xc - # compile a simple, empty C program using the LFS gcc compiler
+      readelf -l a.out | grep ld-linux # use readelf to display info about the created executable and grep for ld-linux to check for the dyanmic linker user 
+      
+      # expected output: [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2] (the LFS specified linker)
+     ```
