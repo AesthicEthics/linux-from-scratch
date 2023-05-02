@@ -276,3 +276,44 @@ The foundational system toolchain was cross-compiled.
     - Contains packages for compressing and decompressing files. Provides caapbilties for the lzma and newer compression formats. 
   
   And second passes were performe on ```Binutils-2.40``` & ```GCC-12.2.0``` to add system specific optimizations for the minimally compiled toolchain
+  
+  ## Chroot Environment
+  
+  In order to continue building some of the packages (and also test the operation of our linux system as of right now), we will create a virtualized environment rooted in the ```LFS``` directory using the ```chroot``` command. This will allow us to interface with the currently mounted/built LFS system as if it was standalone.
+  
+  In entering the chroot environment we completly isolate our LFS system from the host filesystem, expect the running kernel. In order to ensure proper functioning of the system we would still need to maintain communication with the underlying kernel (for resource management, allocation and etc..). By using ```chroot``` we create a <b>namespace</b>, which is a way to partition system resources such that they appear as if they are running in a seperate instance of the operating system.
+
+### Mounting Virtual Kernel File-Systems
+
+A virtual file-system is one that exists only in memory and provides an interface for user-level applications to interface with the kernel. These file systems do not correspond to any physical storage devices. As the user-level application tries to access and manipulate these virtual-file systems, the kernel intercepts that request and responds with the corresponding action.
+
+The following are some of the virtual file systems in linux:
+
+- ```/proc``` : provides information about the current state of the system and the running processes (e.x. disk usage, memory usage, etc)
+- ```/dev```: provides information on/and access to virtual or physical devices connected to the system (e.x. hard-drives, usbs, etc..)
+- ```/sys```: similar to ```/dev``` in the sense that it provides information about <b>physical</b> system devices and general overview of device hardware
+- ```/run```: used to store volatile runtime data and other temporary files created during the system process (e.x. sockets, lockfiles, PIDs)
+
+So we create these directories in our LFS system to allow linux interfacing.
+
+Since we're going to be using the same kernel as the host OS, we'll be doing something called <b>binding</b> the mount points. This creates a new "view" of the current file-system in the new mount-point. This allows the filesystem to be accessible through a different point, any changes made to the orignal directory is reflected throughout all the different access points, but any changes made at an invidual accessibility point will not be reflected back to the original dir. 
+
+We mount the folllowing file systems to make the kernel accessible to the LFS system.
+```bash
+    mount -v --bind /dev $LFS/dev
+    mount -v --bind /dev/pts $LFS/dev/pts
+    mount -vt proc proc $LFS/proc
+    mount -vt sysfs sysfs $LFS/sys
+    mount -vt tmpfs tmpfs $LFS/run
+```
+
+Entering chroot
+
+```bash
+    chroot "$LFS" /usr/bin/env -i   \ # clear current environment variables so only the ones we supply in the next lines apply
+        HOME=/root                  \ # set /root to be the home directory (we're entering chroot as the user root)
+        TERM="$TERM"                \ # set the chroot terminal to be the same as the current
+        PS1='(lfs chroot) \u:\w\$ ' \ # specify the terminal indicator style (username/parentdirectory/workingdir)
+        PATH=/usr/bin:/usr/sbin     \ # add usr/bin and /usr/sbin to path so allow access to utility commands like ls 
+        /bin/bash --login             # start new bash shell in login mode
+```
