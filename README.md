@@ -317,3 +317,7 @@ Entering chroot
         PATH=/usr/bin:/usr/sbin     \ # add usr/bin and /usr/sbin to path so allow access to utility commands like ls 
         /bin/bash --login             # start new bash shell in login mode
 ```
+
+
+https://user-images.githubusercontent.com/70349501/235780253-b96b6c5e-d129-493f-bce5-927bc02690f6.mp4
+
